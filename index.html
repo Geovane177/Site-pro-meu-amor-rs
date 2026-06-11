@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dia dos Namorados</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: #1a0a0e;
+    color: #f5e6ea;
+    overflow-x: hidden;
+  }
+
+  
+  #particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    font-weight: 300;
+    font-size: 0.85rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #e8a0b0;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 8vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.6s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: #f4a0b8;
+  }
+
+  .hero-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: #c9899a;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.9s forwards;
+  }
+
+  .hero-heart {
+    font-size: 3rem;
+    opacity: 0;
+    display: block;
+    animation: heartbeat 1.4s ease-in-out infinite, fadeIn 1s ease 1.2s forwards;
+  }
+
+
+  .section {
+    position: relative;
+    z-index: 1;
+    padding: 5rem 2rem;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #e8a0b0;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::before,
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #7a3045, transparent);
+  }
+
+  
+  .letter-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(248,160,184,0.15);
+    border-radius: 16px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .letter-card::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 24px;
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem;
+    color: rgba(244,160,184,0.1);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .letter-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: #f4a0b8;
+    margin-bottom: 1.5rem;
+  }
+
+  .letter-body {
+    font-weight: 300;
+    font-size: 1.05rem;
+    line-height: 1.95;
+    color: #e8d0d8;
+  }
+
+  .letter-body p { margin-bottom: 1.2rem; }
+  .letter-body p:last-child { margin-bottom: 0; }
+
+  .letter-signature {
+    margin-top: 2rem;
+    text-align: right;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: #f4a0b8;
+    font-size: 1rem;
+  }
+
+  
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 2rem;
+  }
+
+  .photo-slot {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed rgba(248,160,184,0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #c9899a;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .photo-slot:hover {
+    border-color: rgba(248,160,184,0.5);
+    background: rgba(248,160,184,0.06);
+  }
+
+  .photo-slot img {
+    position: absolute;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 11px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .photo-slot img.loaded { opacity: 1; }
+
+  .photo-icon { font-size: 1.8rem; opacity: 0.5; }
+
+  .photo-caption { display: none; }
+
+  
+  .timeline {
+    margin-top: 2rem;
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, #7a3045 20%, #7a3045 80%, transparent);
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+  }
+
+  .timeline-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .timeline-item:nth-child(odd)  { flex-direction: row; }
+  .timeline-item:nth-child(even) { flex-direction: row-reverse; }
+
+  .timeline-content {
+    flex: 1;
+    text-align: right;
+    padding-right: 2rem;
+  }
+
+  .timeline-item:nth-child(even) .timeline-content {
+    text-align: left;
+    padding-right: 0;
+    padding-left: 2rem;
+  }
+
+  .timeline-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #f4a0b8;
+    flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(244,160,184,0.5);
+    position: relative;
+    z-index: 1;
+  }
+
+  .timeline-spacer { flex: 1; }
+
+  .timeline-date {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e8a0b0;
+    margin-bottom: 0.3rem;
+  }
+
+  .timeline-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 0.3rem;
+  }
+
+  .timeline-desc {
+    font-size: 0.85rem;
+    color: #c9899a;
+    line-height: 1.6;
+  }
+
+ 
+  .divider {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: #7a3045;
+    font-size: 0.9rem;
+    letter-spacing: 0.5em;
+    padding: 1rem 0;
+  }
+
+  
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 4rem 2rem;
+    border-top: 1px solid rgba(248,160,184,0.1);
+  }
+
+  .footer-heart {
+    display: inline-block;
+    font-size: 2rem;
+    animation: heartbeat 1.4s ease-in-out infinite;
+    color: #f4a0b8;
+    margin-bottom: 1rem;
+  }
+
+  .footer-names {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #fff;
+  }
+  .footer-names em { font-style: italic; color: #f4a0b8; }
+
+  .footer-tagline {
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #7a3045;
+    margin-top: 1rem;
+  }
+
+  
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14%  { transform: scale(1.15); }
+    28%  { transform: scale(1); }
+    42%  { transform: scale(1.1); }
+    56%  { transform: scale(1); }
+  }
+
+  
+  @media (max-width: 600px) {
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    .letter-card  { padding: 2rem 1.5rem; }
+    .timeline::before { left: 20px; }
+    .timeline-item { flex-direction: row !important; }
+    .timeline-item:nth-child(even) { flex-direction: row !important; }
+    .timeline-content,
+    .timeline-item:nth-child(even) .timeline-content {
+      text-align: left;
+      padding-left: 1.5rem;
+      padding-right: 0;
+    }
+    .timeline-spacer { display: none; }
+    .timeline-dot { margin-left: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+
+<section class="hero">
+ 
+  <p class="hero-eyebrow">13 de junho · O nosso dia e de mais ninguem</p>
+
+  
+  <h1 class="hero-title">Para <em>você</em>,<br>que é tudo pra mim, meu momozi</h1>
+
+  <p class="hero-subtitle">Com todo o meu amor</p>
+  <span class="hero-heart">❤️</span>
+</section>
+
+<div class="divider">· · · ♡ · · ·</div>
+
+
+<section class="section">
+  <p class="section-label">Não podia faltar um texto ne bb rs</p>
+  <div class="letter-card">
+
+
+    <p class="letter-name">Para meu momozi aloce,</p>
+
+    <div class="letter-body">
+      
+      <p>Acho que nunca vão exister palavras para descrever como é bom estar com você, e como é gratificante estar ao seu lado, apesar de lutas e momentos complicados.</p>
+      <p>Mas hoje, nesse dia especial, um dia que podemos finalmente comemorar juntos, agora confortavelmente e pertinhos um do outro, sem medo ou problemas. E mesmo que tenhamos problemas, vamos enfreta-los juntos.</p>
+      <p>Você é a parte mais linda em mim, a parte da qual mais me orgulho e da qual mais fico feliz em ter, saber que você é a minha namorada,
+      que me escolheu pra sua vida, porra eu sou o SEU NAMORADO, dentre tantos outros, como não me orgulhar de possuir tamanho titulo na sua vida.
+      ser a pessoa quem você dividirá sonhos, conquistas, uma vida inteira. Não tenho duvidas quanto a você meu amor, eu te amo hoje e sei que sempre vou te amar, até pq você é quem me faz feliz
+      dia após dia, é você quem me motiva a continuar acordando e seguindo em frente, em meio a dificuldades, rotinas pessadas, dias cansativos, tudo se ameniza
+      pq eu sei que tenho você no final do dia, sei que tenho você na minha vida. Você é completamente perfeita meu amorzão</p>
+    
+      <p>Eu sou completamente grato por ter você e espero que se sinta assim comigo também, que esse seja o primeiro de unumeros outros dia dos namorados
+        em nossa vidas, até pq esse é o primeiro em que estamos oficialmente namorando. Espero que tenha gostado desse presente, que eu fiz com muito carinho
+        e muito amor pra você e unicamente pra você meu momoziii. Que você possa exibir e jogar na cara de todo mundo que você tem o melhor namorado
+        que você tem orgulho de mim, que esse é o melhor presente dentre suas amigas, dentre seus conhecidos, dentre todos, mostre pra todos o quanto eu te amo e o quanto eu sou grato por ter essa garota tão perfeita na minha vida,
+        essa menina alegre e sorridente que incendia meu coração com sentimentos puros e confortantes, eu te amo alice.
+      </p>
+    </div>
+
+ 
+    <p class="letter-signature">Com todo o amor do mundo,<br>seu mundinho ❤</p>
+  </div>
+</section>
+
+<div class="divider">· · · ♡ · · ·</div>
+
+
+<section class="section">
+  <p class="section-label">Nossos momentos rs</p>
+  <div class="gallery-grid">
+
+    
+    <div class="photo-slot"><img src="fotos/completando coracao.jpeg" class="loaded" alt="Foto 1"></div>
+    <div class="photo-slot"><img src="fotos/ela no meu braco rs.jpeg" class="loaded" alt="Foto 2"></div>
+    <div class="photo-slot"><img src="fotos/Ela perfeita dormindo no meu peito.jpeg" class="loaded" alt="Foto 3"></div>
+    <div class="photo-slot"><img src="fotos/eu de make e ela linda perfeita.jpeg" class="loaded" alt="Foto 4"></div>
+    <div class="photo-slot"><img src="fotos/no sofa olhando pra cam com cara fofa.jpeg" class="loaded" alt="Foto 5"></div>
+    <div class="photo-slot"><img src="fotos/nois deitado com lingua pra fora.jpeg" class="loaded" alt="Foto 6"></div>
+    <div class="photo-slot"><img src="fotos/No morro levando ela.jpeg" class="loaded" alt="Foto 7"></div>
+    <div class="photo-slot"><img src="fotos/Nos com olhos e desenho rs.jpeg" class="loaded" alt="Foto 8"></div>
+    <div class="photo-slot"><img src="fotos/WhatsApp Image 2026-06-10 at 20.09.33.jpeg" class="loaded" alt="Foto 9"></div>
+    <div class="photo-slot"><img src="fotos/IMG_0780.jpg" class="loaded" alt="Foto 10"></div>
+    <div class="photo-slot"><img src="fotos/nosso pedido de namoro rs.jpeg" class="loaded" alt="Foto 11"></div>
+    <div class="photo-slot"><img src="fotos/IMG_0781.png" class="loaded" alt="Foto 12"></div>
+
+    
+    
+  </div>
+</section>
+
+
+
+
+<footer>
+  <div class="footer-heart">♡</div>
+
+ 
+  <p class="footer-names"><em>seu mundinho♡  </em> &amp; <em> minha espirrinho♡ </em></p>
+  <p class="footer-tagline">Hoje e para sempre momozi</p>
+</footer>
+
+
+     
+<script>
+
+const canvas = document.getElementById('particles');
+const ctx    = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const particles = Array.from({ length: 45 }, () => ({
+  x:       Math.random() * window.innerWidth,
+  y:       Math.random() * window.innerHeight,
+  size:    Math.random() * 2.2 + 0.5,
+  speedX:  (Math.random() - 0.5) * 0.3,
+  speedY:  Math.random() * -0.45 - 0.1,
+  opacity: Math.random() * 0.35 + 0.08,
+}));
+
+function drawHeart(cx, cy, size) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(size, size);
+  ctx.beginPath();
+  ctx.moveTo(0, -0.5);
+  ctx.bezierCurveTo( 0.5, -1,  1, -0.2, 0,  0.7);
+  ctx.bezierCurveTo(-1,  -0.2, -0.5, -1, 0, -0.5);
+  ctx.fill();
+  ctx.restore();
+}
+
+(function loop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    ctx.fillStyle = `rgba(244,160,184,${p.opacity})`;
+    drawHeart(p.x, p.y, p.size * 6);
+    p.x += p.speedX;
+    p.y += p.speedY;
+    if (p.y < -20) {
+      p.y = canvas.height + 20;
+      p.x = Math.random() * canvas.width;
+    }
+  });
+  requestAnimationFrame(loop);
+})();
+
+
+const observer = new IntersectionObserver(
+  entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+  { threshold: 0.2 }
+);
+document.querySelectorAll('.timeline-item').forEach(el => observer.observe(el));
+
+
+function uploadPhoto(el) {
+  const input = document.createElement('input');
+  input.type   = 'file';
+  input.accept = 'image/*';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      let img = el.querySelector('img');
+      if (!img) { img = document.createElement('img'); el.appendChild(img); }
+      img.src = ev.target.result;
+      img.onload = () => img.classList.add('loaded');
+      el.querySelector('.photo-icon').style.display = 'none';
+      const label = el.querySelector('span:not(.photo-caption):not(.photo-icon)');
+      if (label) label.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+</script>
+</body>
+</html>
